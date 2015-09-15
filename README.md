@@ -4,9 +4,9 @@ A lightweight library to convert keys from PEM files into byte arrays.
 
 ## Usage
 
-__Leiningen ([via Clojars](http://clojars.org))__
+__Leiningen__ ([via Clojars](https://clojars.org/xsc/pem-reader))
 
-TODO
+[![Clojars Project](http://clojars.org/xsc/pem-reader/latest-version.svg)](http://clojars.org/xsc/pem-reader)
 
 __REPL__
 
