@@ -105,8 +105,8 @@
 ;; ## Read Function
 
 (defn read
-  "Read a PEM file. The following formats (identifier by the PEM's `BEGIN` block
-   are supported:
+  "Read a PEM file. The following formats (identified by the PEM's `BEGIN`
+   block) are supported:
 
    - PKCS#1 (`RSA PRIVATE KEY`)
    - PKCS#8 (`PRIVATE KEY`)
