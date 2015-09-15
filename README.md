@@ -10,7 +10,7 @@ TODO
 
 __REPL__
 
-```
+```clojure
 (require '[pem-reader.core :as pem])
 
 (def pem (pem/read "test/keys/rsa-private-key.pem"))
