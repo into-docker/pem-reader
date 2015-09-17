@@ -1,4 +1,4 @@
-(defproject xsc/pem-reader "0.1.1"
+(defproject xsc/pem-reader "0.1.2-SNAPSHOT"
   :description "A lightweight PEM reader, retrieving keys as byte arrays."
   :url "https://github.com/xsc/pem-reader"
   :license {:name "MIT License"
