@@ -21,6 +21,12 @@ __REPL__
 
 (pem/as-bytes pem)
 ;; => #object["[B" 0x5698633e "[B@5698633e"]
+
+(pem/private-key pem)
+;; => #object[sun.security.rsa.RSAPrivateCrtKeyImpl 0x9a2de04 "sun.security.rsa.RSAPrivateCrtKeyImpl@4940"]
+
+(pem/public-key pem)
+;; => nil
 ```
 
 ## Supported Formats

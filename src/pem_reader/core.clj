@@ -18,39 +18,55 @@
   (type [_]
     "Keyword identifying the key type, generated from the PEM's `BEGIN` block,
      e.g. `:rsa-private-key` for `RSA PRIVATE KEY`.")
-  (as-bytes [_]
-    "Get the key as a byte array."))
+  (private-key [_]
+    "Get the key as an instance of `java.security.PrivateKey`.")
+  (public-key [_]
+    "Get the key as an instance of `java.security.PublicKey`."))
 
-(deftype PEM [type bytes]
+(defprotocol ByteConvert
+  (as-bytes [_]))
+
+(deftype PEM [type private-key public-key]
   ReadablePEM
   (type [_]
     type)
+  (private-key [_]
+    private-key)
+  (public-key [_]
+    public-key)
+
+  ByteConvert
   (as-bytes [_]
-    bytes))
+    (.getEncoded (or private-key public-key))))
+
+(extend-protocol ByteConvert
+  java.security.PrivateKey
+  (as-bytes [k]
+    (.getEncoded k))
+
+  java.security.PublicKey
+  (as-bytes [k]
+    (.getEncoded k)))
 
 ;; ## Helpers
 
 (def ^:private +pem-pattern+
   #"^\s*-{5}BEGIN (.+)-{5}\s+([a-zA-Z0-9-_/+\s=]+)\s+-{5}END (.+)-{5}\s*$")
 
-(defmacro ^:private spec->key
+(defmacro ^:private spec->key-data
   "Generate the key byte array from a KeySpec using the given algorithm and
    lookup method."
-  [algorithm spec generate-method]
-  `(let [spec# ~spec]
-     (.. (KeyFactory/getInstance ~algorithm)
-         (~generate-method spec#)
-         getEncoded)))
+  [algorithm spec which]
+  `(let [spec# ~spec
+         kf# (KeyFactory/getInstance ~algorithm)
+         which# ~which]
+     {:private-key (if (which# :private) (.generatePrivate kf# spec#))
+      :public-key  (if (which# :public) (.generatePublic kf# spec#))}))
 
-(defn- rsa-private-key
+(defn- rsa-key
   "Generate an RSA private key from the given KeySpec."
-  [spec]
-  (spec->key "RSA" spec generatePrivate))
-
-(defn- rsa-public-key
-  "Generate an RSA public key from the given KeySpec."
-  [spec]
-  (spec->key "RSA" spec generatePublic))
+  [spec which]
+  (spec->key-data "RSA" spec which))
 
 ;; ## Reader Logic
 
@@ -77,24 +93,26 @@
 
 (defmethod read-key :private-key
   [_ bytes]
-  (rsa-private-key
-    (PKCS8EncodedKeySpec. bytes)))
+  (rsa-key
+    (PKCS8EncodedKeySpec. bytes)
+    #{:private}))
 
 (defmethod read-key :rsa-private-key
   [_ bytes]
-  (rsa-private-key
-    (read-pkcs1-spec bytes)))
+  (rsa-key
+    (read-pkcs1-spec bytes)
+    #{:private}))
 
 (defmethod read-key :certificate
   [_ bytes]
-  (-> (X509Certificate/getInstance bytes)
-      (.getPublicKey)
-      (.getEncoded)))
+  (let [crt (X509Certificate/getInstance bytes)]
+    {:public-key (.getPublicKey crt)}))
 
 (defmethod read-key :public-key
   [_ bytes]
-  (rsa-public-key
-    (X509EncodedKeySpec. bytes)))
+  (rsa-key
+    (X509EncodedKeySpec. bytes)
+    #{:public}))
 
 (defmethod read-key :default
   [type _]
@@ -121,5 +139,8 @@
         (assert (= begin end) "BEGIN and END block do not match.")
         (let [key-bytes (read-key-bytes private-key)
               key-type  (read-type begin)
-              key       (read-key key-type key-bytes)]
-          (->PEM key-type key))))))
+              key-data       (read-key key-type key-bytes)]
+          (->PEM
+            key-type
+            (:private-key key-data)
+            (:public-key key-data)))))))
