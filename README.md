@@ -1,6 +1,6 @@
 # pem-reader
 
-A lightweight library to convert keys from PEM files into byte arrays.
+A lightweight library to read keys from PEM files.
 
 ## Usage
 
