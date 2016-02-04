@@ -50,7 +50,7 @@ Contributions are always welcome. Just make sure the tests are passing.
 ```
 The MIT License (MIT)
 
-Copyright (c) 2015 Yannick Scherer
+Copyright (c) 2015-2016 Yannick Scherer
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
