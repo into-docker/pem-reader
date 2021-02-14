@@ -1,10 +1,26 @@
-(defproject xsc/pem-reader "0.1.2-SNAPSHOT"
-  :description "A lightweight reader, retrieving keys from PEM files."
+(defproject into-docker/pem-reader "1.0.0-SNAPSHOT"
+  :description "A lightweight reader for key/certificate files"
   :url "https://github.com/xsc/pem-reader"
-  :license {:name "MIT License"
-            :url "http://opensource.org/licenses/MIT"
+  :license {:name "MIT"
+            :url "https://choosealicense.com/licenses/mit"
             :year 2015
-            :key "mit"}
-  :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/data.codec "0.1.0"]]
+            :key "mit"
+            :comment "MIT License"}
+  :dependencies [[org.clojure/clojure "1.10.2" :scope "provided"]
+                 [org.clojure/data.codec "0.1.1"]]
+  :profiles {:dev
+             {:global-vars {*warn-on-reflection* true}}
+             :kaocha
+             {:dependencies [[lambdaisland/kaocha "1.0.732"
+                              :exclusions [org.clojure/spec.alpha]]
+                             [lambdaisland/kaocha-cloverage "1.0.75"]]}
+             :ci
+             [:kaocha
+              {:global-vars {*warn-on-reflection* false}}]}
+  :aliases {"kaocha"    ["with-profile" "+kaocha" "run" "-m" "kaocha.runner"]
+            "ci"        ["with-profile" "+ci" "run" "-m" "kaocha.runner"
+                         "--reporter" "documentation"
+                         "--plugin"   "cloverage"
+                         "--codecov"
+                         "--no-cov-html"]}
   :pedantic? :abort)

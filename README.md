@@ -1,40 +1,30 @@
 # pem-reader
 
+[![Clojars Artifact](https://img.shields.io/clojars/v/into-docker/pem-reader.svg)](https://clojars.org/into-docker/pem-reader)
+![CI](https://github.com/into-docker/pem-reader/workflows/CI/badge.svg?branch=master)
+[![codecov](https://codecov.io/gh/into-docker/pem-reader/branch/master/graph/badge.svg?token=GLSK1G95TX)](https://codecov.io/gh/into-docker/pem-reader)
+
 A lightweight library to read keys from PEM files.
 
 ## Usage
 
-__Leiningen__ ([via Clojars](https://clojars.org/xsc/pem-reader))
-
-[![Clojars Project](http://clojars.org/xsc/pem-reader/latest-version.svg)](http://clojars.org/xsc/pem-reader)
-
-__REPL__
-
 ```clojure
 (require '[pem-reader.core :as pem])
 
-(def pem (pem/read "test/keys/rsa-private-key.pem"))
-;; => #object[pem_reader.core.PEM 0x32c56ed9 "pem_reader.core.PEM@32c56ed9"]
-
-(pem/type pem)
-;; => :rsa-private-key
-
-(pem/as-bytes pem)
-;; => #object["[B" 0x5698633e "[B@5698633e"]
-
-(pem/private-key pem)
-;; => #object[sun.security.rsa.RSAPrivateCrtKeyImpl 0x9a2de04 "sun.security.rsa.RSAPrivateCrtKeyImpl@4940"]
-
-(pem/public-key pem)
-;; => nil
+(pem/read "test/keys/rsa-private-key.pem")
+;; => {:type :pkcs1,
+;;     :public-key #object[sun.security.rsa.RSAPublicKeyImpl ...],
+;;     :private-key #object[sun.security.rsa.RSAPrivateCrtKeyImpl ...]}
 ```
 
 ## Supported Formats
 
-- PKCS#1 (`RSA PRIVATE KEY`)
-- PKCS#8 (`PRIVATE KEY`)
-- X509 Public Key (`PUBLIC KEY`)
-- X509 Certificate (`CERTIFICATE`)
+| Format           | `:type`             | Result Keys                   |
+| ---------------- | ------------------- | ----------------------------- |
+| PKCS#1           | `:pkcs1`            | `:private-key`, `:public-key` |
+| PKCS#8           | `:pkcs8`            | `:private-key`                |
+| X509 Public Key  | `:x509-public-key`  | `:public-key`                 |
+| X509 Certificate | `:x509-certificate` | `:certificate`                |
 
 ## Rationale
 
@@ -48,9 +38,9 @@ Contributions are always welcome. Just make sure the tests are passing.
 ## License
 
 ```
-The MIT License (MIT)
+MIT License
 
-Copyright (c) 2015-2016 Yannick Scherer
+Copyright (c) 2015-2021 Yannick Scherer
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
