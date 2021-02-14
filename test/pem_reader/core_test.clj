@@ -1,7 +1,8 @@
 (ns pem-reader.core-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is]]
             [pem-reader.core :as pem])
-  (:import [java.security PrivateKey PublicKey]))
+  (:import (java.security PrivateKey PublicKey)
+           (java.security.cert X509Certificate)))
 
 ;; Example PEMs taken from:
 ;;
@@ -9,24 +10,23 @@
 ;;
 ;; (could not find a LICENSE.)
 
-(deftest t-private-keys
-  (let [k0 (pem/read "test/keys/private-key.pem")
-        k1 (pem/read "test/keys/rsa-private-key.pem")]
-    (is (= (pem/type k0) :private-key))
-    (is (= (pem/type k1) :rsa-private-key))
-    (is (nil? (pem/public-key k0)))
-    (is (nil? (pem/public-key k1)))
-    (is (instance? PrivateKey (pem/private-key k0)))
-    (is (instance? PrivateKey (pem/private-key k1)))
-    (is (= (seq (pem/as-bytes k0)) (seq (pem/as-bytes k1))))))
+(deftest t-pkcs8
+  (let [result (pem/read "test/keys/private-key.pem")]
+    (is (= :pkcs8 (:type result)))
+    (is (instance? PrivateKey (:private-key result)))))
 
-(deftest t-public-keys
-  (let [k0 (pem/read "test/keys/public-key.pem")
-        k1 (pem/read "test/keys/certificate.pem")]
-    (is (= (pem/type k0) :public-key))
-    (is (= (pem/type k1) :certificate))
-    (is (nil? (pem/private-key k0)))
-    (is (nil? (pem/private-key k1)))
-    (is (instance? PublicKey (pem/public-key k0)))
-    (is (instance? PublicKey (pem/public-key k1)))
-    (is (= (seq (pem/as-bytes k0)) (seq (pem/as-bytes k1))))))
+(deftest t-pkcs1
+  (let [result (pem/read "test/keys/rsa-private-key.pem")]
+    (is (= :pkcs1 (:type result)))
+    (is (instance? PrivateKey (:private-key result)))
+    (is (instance? PublicKey (:public-key result)))))
+
+(deftest t-x509-certificate
+  (let [result (pem/read "test/keys/certificate.pem")]
+    (is (= :x509-certificate (:type result)))
+    (is (instance? X509Certificate (:certificate result)))))
+
+(deftest t-x509-public-key
+  (let [result (pem/read "test/keys/public-key.pem")]
+    (is (= :x509-public-key (:type result)))
+    (is (instance? PublicKey (:public-key result)))))

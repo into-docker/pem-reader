@@ -1,6 +1,8 @@
 (ns pem-reader.readers.pkcs1
   (:require [clojure.string :as string])
-  (:import [java.security.spec RSAPrivateCrtKeySpec]))
+  (:import (java.security.spec
+            RSAPrivateCrtKeySpec
+            RSAPublicKeySpec)))
 
 ;; ## Derivative
 ;;
@@ -71,7 +73,7 @@
                        :primitive)
         tag          (bit-and classifier-octet 0x1f)
         [type-k c?]  (expected-tags tag)
-        class-k      (expected-classes class)
+        _class-k      (expected-classes class)
         [length rst] (read-length rst)]
     (assert (= constructed? c?) "DER: primitive/constructed conflict.")
     {:type         type-k
@@ -103,4 +105,5 @@
   "Read a PKCS#1 encoded private key into a `RSAPrivateCrtKeySpec`."
   [bytes]
   (let [[_ m e d p q e1 e2 c] (read-key-sequence bytes)]
-    (RSAPrivateCrtKeySpec. m e d p q e1 e2 c)))
+    {:private (RSAPrivateCrtKeySpec. m e d p q e1 e2 c)
+     :public  (RSAPublicKeySpec. m e)}))
