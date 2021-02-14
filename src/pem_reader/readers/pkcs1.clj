@@ -25,13 +25,13 @@
 ;; ## Helpers
 
 (defn- expected-tags
-  [tag]
+  [^long tag]
   (case tag
     0x02 [:integer  :primitive]
     0x10 [:sequence :constructed]))
 
 (defn- expected-classes
-  [class]
+  [^long class]
   (case class
     0x0 :universal))
 
