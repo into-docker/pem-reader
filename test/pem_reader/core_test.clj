@@ -40,4 +40,9 @@
        AssertionError
        #"BEGIN and END block do not match"
        (pem/read
-        (.getBytes "-----BEGIN X-----\nabcdef\n-----END Y-----")))))
+        (.getBytes "-----BEGIN X-----\nabcdef\n-----END Y-----"))))
+  (is (thrown-with-msg?
+       IllegalArgumentException
+       #"Cannot read PEMs of type ':unknown'"
+       (pem/read
+        (.getBytes "-----BEGIN UNKNOWN-----\nabcdef\n-----END UNKNOWN-----")))))

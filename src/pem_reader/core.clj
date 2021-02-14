@@ -65,4 +65,4 @@
         :public-key      (gen-x509-public-key bytes)
         (throw
           (IllegalArgumentException.
-            (format "cannot read PEMs of type '%s'" type)))))))
+            (format "Cannot read PEMs of type '%s'" type)))))))
