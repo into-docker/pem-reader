@@ -30,3 +30,14 @@
   (let [result (pem/read "test/keys/public-key.pem")]
     (is (= :x509-public-key (:type result)))
     (is (instance? PublicKey (:public-key result)))))
+
+(deftest t-invalid-format
+  (is (thrown-with-msg?
+       IllegalArgumentException
+       #"Not in PEM format!"
+       (pem/read "project.clj")))
+  (is (thrown-with-msg?
+       AssertionError
+       #"BEGIN and END block do not match"
+       (pem/read
+        (.getBytes "-----BEGIN X-----\nabcdef\n-----END Y-----")))))

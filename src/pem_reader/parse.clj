@@ -32,7 +32,10 @@
   (decoded content as byte array)."
   [in]
   (let [data (slurp in :encoding "UTF-8")]
-    (when-let [[_ begin base64-data end] (re-find +pem-pattern+ data)]
-      (assert (= begin end) "BEGIN and END block do not match.")
-      {:type   (read-type begin)
-       :bytes  (decode-base64 base64-data)})))
+    (or (when-let [[_ begin base64-data end] (re-find +pem-pattern+ data)]
+          (assert (= begin end) "BEGIN and END block do not match.")
+          {:type   (read-type begin)
+           :bytes  (decode-base64 base64-data)})
+        (throw
+         (IllegalArgumentException.
+           "Not in PEM format!")))))
