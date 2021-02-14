@@ -1,6 +1,6 @@
 (defproject into-docker/pem-reader "1.0.0-SNAPSHOT"
   :description "A lightweight reader for key/certificate files"
-  :url "https://github.com/xsc/pem-reader"
+  :url "https://github.com/into-docker/pem-reader"
   :license {:name "MIT"
             :url "https://choosealicense.com/licenses/mit"
             :year 2015
