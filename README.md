@@ -1,6 +1,7 @@
 # pem-reader
 
 [![Clojars Artifact](https://img.shields.io/clojars/v/into-docker/pem-reader.svg)](https://clojars.org/into-docker/pem-reader)
+[![Documentation](https://cljdoc.org/badge/into-docker/pem-reader)](https://cljdoc.org/d/into-docker/pem-reader/CURRENT)
 ![CI](https://github.com/into-docker/pem-reader/workflows/CI/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/into-docker/pem-reader/branch/master/graph/badge.svg?token=GLSK1G95TX)](https://codecov.io/gh/into-docker/pem-reader)
 
