@@ -1,4 +1,4 @@
-(ns pem-reader.parse
+(ns ^:no-doc pem-reader.parse
   (:require [clojure.string :as string]
             [clojure.data.codec.base64 :as b64]))
 

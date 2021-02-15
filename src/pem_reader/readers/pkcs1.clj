@@ -1,4 +1,4 @@
-(ns pem-reader.readers.pkcs1
+(ns ^:no-doc pem-reader.readers.pkcs1
   (:require [clojure.string :as string])
   (:import (java.security.spec
             RSAPrivateCrtKeySpec
