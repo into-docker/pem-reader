@@ -1,7 +1,7 @@
 (ns pem-reader.core-test
   (:require [clojure.test :refer [deftest is]]
             [pem-reader.core :as pem])
-  (:import (java.security PrivateKey PublicKey)
+  (:import (java.security KeyPair PrivateKey PublicKey)
            (java.security.cert X509Certificate)))
 
 ;; Example PEMs taken from:
@@ -15,7 +15,8 @@
         result (pem/read file)]
     (is (= :pkcs8 (:type result)))
     (is (instance? PrivateKey (:private-key result)))
-    (is (instance? PrivateKey (pem/read-private-key file)))))
+    (is (instance? PrivateKey (pem/read-private-key file)))
+    (is (instance? KeyPair (pem/read-key-pair file)))))
 
 (deftest t-pkcs1
   (let [file "test/keys/rsa-private-key.pem"
@@ -24,7 +25,8 @@
     (is (instance? PrivateKey (:private-key result)))
     (is (instance? PublicKey (:public-key result)))
     (is (instance? PrivateKey (pem/read-private-key file)))
-    (is (instance? PublicKey (pem/read-public-key file)))))
+    (is (instance? PublicKey (pem/read-public-key file)))
+    (is (instance? KeyPair (pem/read-key-pair file)))))
 
 (deftest t-x509-certificate
   (let [file "test/keys/certificate.pem"
@@ -49,6 +51,10 @@
        AssertionError
        #"No private key in input type: "
        (pem/read-private-key "test/keys/public-key.pem")))
+  (is (thrown-with-msg?
+       AssertionError
+       #"No private key in input type: "
+       (pem/read-key-pair "test/keys/public-key.pem")))
   (is (thrown-with-msg?
        AssertionError
        #"No public key in input type: "
