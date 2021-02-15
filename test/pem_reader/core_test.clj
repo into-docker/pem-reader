@@ -11,25 +11,48 @@
 ;; (could not find a LICENSE.)
 
 (deftest t-pkcs8
-  (let [result (pem/read "test/keys/private-key.pem")]
+  (let [file "test/keys/private-key.pem"
+        result (pem/read file)]
     (is (= :pkcs8 (:type result)))
-    (is (instance? PrivateKey (:private-key result)))))
+    (is (instance? PrivateKey (:private-key result)))
+    (is (instance? PrivateKey (pem/read-private-key file)))))
 
 (deftest t-pkcs1
-  (let [result (pem/read "test/keys/rsa-private-key.pem")]
+  (let [file "test/keys/rsa-private-key.pem"
+        result (pem/read file)]
     (is (= :pkcs1 (:type result)))
     (is (instance? PrivateKey (:private-key result)))
-    (is (instance? PublicKey (:public-key result)))))
+    (is (instance? PublicKey (:public-key result)))
+    (is (instance? PrivateKey (pem/read-private-key file)))
+    (is (instance? PublicKey (pem/read-public-key file)))))
 
 (deftest t-x509-certificate
-  (let [result (pem/read "test/keys/certificate.pem")]
+  (let [file "test/keys/certificate.pem"
+        result (pem/read file)]
     (is (= :x509-certificate (:type result)))
-    (is (instance? X509Certificate (:certificate result)))))
+    (is (instance? X509Certificate (:certificate result)))
+    (is (instance? X509Certificate (pem/read-certificate file)))))
 
 (deftest t-x509-public-key
-  (let [result (pem/read "test/keys/public-key.pem")]
+  (let [file "test/keys/public-key.pem"
+        result (pem/read file)]
     (is (= :x509-public-key (:type result)))
-    (is (instance? PublicKey (:public-key result)))))
+    (is (instance? PublicKey (:public-key result)))
+    (is (instance? PublicKey (pem/read-public-key file)))))
+
+(deftest t-content-mismatch
+  (is (thrown-with-msg?
+       AssertionError
+       #"No certificate in input type: "
+       (pem/read-certificate "test/keys/private-key.pem")))
+  (is (thrown-with-msg?
+       AssertionError
+       #"No private key in input type: "
+       (pem/read-private-key "test/keys/public-key.pem")))
+  (is (thrown-with-msg?
+       AssertionError
+       #"No public key in input type: "
+       (pem/read-public-key "test/keys/private-key.pem"))))
 
 (deftest t-invalid-format
   (is (thrown-with-msg?

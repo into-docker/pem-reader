@@ -6,11 +6,15 @@
              [parse :refer [parse-pem]]
              [rsa :as rsa]]
             [clojure.java.io :as io])
-  (:import [java.security.spec
+  (:import (java.security
+            PrivateKey
+            PublicKey)
+           (java.security.spec
             PKCS8EncodedKeySpec
-            X509EncodedKeySpec]
-           [java.security.cert
-            CertificateFactory]))
+            X509EncodedKeySpec)
+           (java.security.cert
+            CertificateFactory
+            X509Certificate)))
 
 ;; ## Readers
 
@@ -40,11 +44,10 @@
      :public-key  (rsa/as-public-key public)
      :private-key (rsa/as-private-key private)}))
 
-
 ;; ## Read Function
 
 (defn read
-  "Read a PEM file. The following formats (identified by the PEM's `BEGIN`
+  "Read a PEM input. The following formats (identified by the PEM's `BEGIN`
    block) are supported:
 
    - PKCS#1 (`RSA PRIVATE KEY`)
@@ -55,8 +58,8 @@
    The result will be a map with `:type` being one of `:pkcs1`, `:pkcs8`,
    `:x509-public-key` or `:x509-certificate` and additional, type-specific
    data."
-  [file]
-  (with-open [in (io/input-stream file)]
+  [input]
+  (with-open [in (io/input-stream input)]
     (let [{:keys [type bytes]} (parse-pem in)]
       (case type
         :rsa-private-key (gen-pkcs1 bytes)
@@ -66,3 +69,29 @@
         (throw
           (IllegalArgumentException.
             (format "Cannot read PEMs of type '%s'" type)))))))
+
+;; ## Syntactic Sugar
+
+(defn read-certificate
+  "Read an `X509Certificate` from the given input. Will throw an
+  `AssertionError` if the input does not contain a certificate."
+  ^X509Certificate [input]
+  (let [{:keys [type certificate]} (read input)]
+    (assert (some? certificate) (str "No certificate in input type: " type))
+    certificate))
+
+(defn read-private-key
+  "Read a `PrivateKey` from the given input. Will throw an `AssertionError` if
+   the input does not contain a private key."
+  ^PrivateKey [input]
+  (let [{:keys [type private-key]} (read input)]
+    (assert (some? private-key) (str "No private key in input type: " type))
+    private-key))
+
+(defn read-public-key
+  "Read a `PublicKey` from the given input. Will throw an `AssertionError` if
+   the input does not contain a public key."
+  ^PublicKey [input]
+  (let [{:keys [type public-key]} (read input)]
+    (assert (some? public-key) (str "No public key in input type: " type))
+    public-key))
