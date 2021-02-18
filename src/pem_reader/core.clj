@@ -98,11 +98,11 @@
     public-key))
 
 (defn read-key-pair
-  "Read a `PrivateKey` from the given input. Will throw an `AssertionError` if
+  "Read a `KeyPair` from the given input. Will throw an `AssertionError` if
    the input does not contain a private key.
 
    Note that the key pair might not contain a public key (e.g. in the case of
-   PKCS#8 input."
+   PKCS#8 input)."
   ^KeyPair [input]
   (let [{:keys [type private-key public-key]} (read input)]
     (assert (some? private-key) (str "No private key in input type: " type))
