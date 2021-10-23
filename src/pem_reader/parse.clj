@@ -1,6 +1,6 @@
 (ns ^:no-doc pem-reader.parse
-  (:require [clojure.string :as string]
-            [clojure.data.codec.base64 :as b64]))
+  (:require [clojure.string :as string])
+  (:import [java.util Base64]))
 
 ;; ## Pattern for PEM files
 
@@ -20,10 +20,8 @@
 (defn- decode-base64
   "Read the Base64 encoded key byte array."
   [^String base64-data]
-  (-> base64-data
-      (string/replace #"\s+" "")
-      (.getBytes "UTF-8")
-      (b64/decode)))
+  (let [without-spaces (string/replace base64-data #"\s+" "")]
+    (.decode (Base64/getDecoder) without-spaces)))
 
 ;; ## Parse
 
@@ -39,3 +37,6 @@
         (throw
          (IllegalArgumentException.
            "Not in PEM format!")))))
+
+(comment
+  (decode-base64 "aGVsbG8="))
