@@ -6,8 +6,7 @@
             :year 2015
             :key "mit"
             :comment "MIT License"}
-  :dependencies [[org.clojure/clojure "1.10.2" :scope "provided"]
-                 [org.clojure/data.codec "0.1.1"]]
+  :dependencies [[org.clojure/clojure "1.10.2" :scope "provided"]]
   :profiles {:dev
              {:global-vars {*warn-on-reflection* true}}
              :kaocha
